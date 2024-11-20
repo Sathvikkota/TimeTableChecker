@@ -1,0 +1,95 @@
+{% block content %}
+<style>
+  .csv-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ddd;
+  }
+
+  .csv-table th, .csv-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .csv-table th {
+    background-color: #f2f2f2;
+  }
+
+  .clash-row {
+    background-color: #FFCCCC; /* Red background for clash rows */
+  }
+
+  .clash-cell {
+    background-color: #FF9999; /* Lighter red background for clash cells */
+  }
+</style>
+
+<h1>Welcome, Admin!</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <label for="csv_file">Upload Timetable.csv file:</label>
+  <input type="file" name="csv_file" accept=".csv" required><br/>
+  <button type="submit">Upload</button>
+</form>
+
+<div>
+    <h3>Clash Pages:</h3>
+    <a href={% url 'filterByclash' "all" %} class="btn btn-primary">All Clashes</a>
+    <a href={% url 'filterByclash' "room" %} class="btn btn-primary">Room Clash</a>
+    <a href={% url 'filterByclash' "course" %} class="btn btn-primary">Course Clash</a>
+    <a href={% url 'filterByclash' "emp" %} class="btn btn-primary">Employee Clash</a>
+    <a href={% url 'filterByclash' "section" %} class="btn btn-primary">Section Clash</a>
+</div>
+
+{% if csv_data %}
+  <h2>CSV Data:</h2>
+  <table class="csv-table">
+    <thead>
+      <tr>
+        <th>Clashes</th>
+        <th>Sl No</th>
+        <th>Emp ID</th>
+        <th>Day</th>
+        <th>Hour</th>
+        <th>Room</th>
+        <th>Course Code</th>
+        <th>Section</th>
+        <th>Associate Section</th>
+        <th>Component</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for row in csv_data %}
+            {% for clash in clash_data %}
+                {% if row == clash.clash_row %}
+                    <tr class="clash-row">
+                        <td>
+                            {{ clash.type }}<br>
+                            SI No: {{ clash.clash_row.slno }}, Emp ID: {{ clash.clash_row.empid }}, Day: {{ clash.clash_row.day }}, Hour: {{ clash.clash_row.hour }}, Room: {{ clash.clash_row.room }}<br>
+                            Clash with:<br/> SI No: {{ clash.other_row.slno }}, Emp ID: {{ clash.other_row.empid }}, Day: {{ clash.other_row.day }}, Hour: {{ clash.other_row.hour }}, Room: {{ clash.other_row.room }}<br>
+                        </td>
+                        <td>{{ row.slno }}</td>
+                        <td>{{ row.reg }}</td>
+                        <td>{{ row.coursecode }}</td>
+                        <td>{{ row.coursename }}</td>
+                        <td>{{ row.component }}</td>
+                        <td {% if row in clash_data %} class="clash-cell"{% endif %}>{{ row.section }}</td>
+                        <td>{{ row.associates }}</td>
+                        <td>{{ row.department }}</td>
+                        <td>{{ row.empid }}</td>
+                        <td>{{ row.facultyname }}</td>
+                        <td>{{ row.day }}</td>
+                        <td {% if row in clash_data %} class="clash-cell"{% endif %}>{{ row.hour }}</td>
+                        <td>{{ row.block }}</td>
+                        <td {% if row in clash_data %} class="clash-cell"{% endif %}>{{ row.room }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+    <p>No Clashes</p>
+{% endif %}
+{% endblock %}

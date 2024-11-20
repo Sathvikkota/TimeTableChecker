@@ -1,0 +1,23 @@
+{% load static %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'css/loginown.css' %}">
+    <title>Login</title>
+</head>
+<body>
+    <div class="loginbox">
+        <font style="color:red">{{error_message}}</font>
+        <h1>Login Here</h1>
+        <form action="{% url 'user_login' %}" method="POST">
+            {% csrf_token %}
+            <p>Username</p>
+            <input type="text" name="username" id="username" placeholder="Enter username" required>
+            <p>Password</p>
+            <input type="password" name="password" placeholder="Enter Password" required>
+            <input type="submit" value="Login">
+            <a href="#">Don't have an Account</a><br>
+            <a href="#">Go Home</a>
+        </form>
+    </div>
+</body>
+</html>
